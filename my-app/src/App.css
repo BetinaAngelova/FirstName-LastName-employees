@@ -1,39 +1,45 @@
 .app {
-	padding: 20px;
+  padding: 20px;
 }
 
 .app .table {
-	width: 500px;
-	margin-top: 20px;
-	border: 1px solid #000;
+  width: 500px;
+  margin-top: 20px;
+  border: 1px solid #000;
 }
 
 .app .table .header {
-	background: #e6faff;
-	border-bottom: 1px solid #000;
+  background: #e6faff;
+  border-bottom: 1px solid #000;
 }
 
 .app .table .header,
 .app .table .content .row {
-	display: flex;
-	align-items: center;
-	box-sizing: border-box;
-	height: 40px;
-	font-size: 14px;
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+  height: 40px;
+  font-size: 14px;
 }
 
 .app .table .header .column,
 .app .table .content .row .column {
-	padding: 0 15px;
-	flex: 1;
+  padding: 0 15px;
+  flex: 1;
 }
 
 .app .table .content {
-	height: 80px;
-	background: #ccefff;
-	overflow-y: auto;
+  height: 80px;
+  background: #ccefff;
+  overflow-y: auto;
 }
 
 .app .table .content .row ~ .row {
-	border-top: 1px solid #000;
+  border-top: 1px solid #000;
+}
+
+.app .additional-info {
+  font-size: 14px;
+  font-weight: 600;
+  padding-top: 20px;
 }
