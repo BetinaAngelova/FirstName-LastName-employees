@@ -14,6 +14,7 @@ const formatDate = date => {
 function App() {
   const [data, setData] = useState([]);
   const { firstColleagueId, secondColleagueId } = findLongestWorkingColleagues(data);
+  console.log({ firstColleagueId, secondColleagueId });
   const onChange = useCallback(event => {
     const { files, value: filePath } = event.target;
 
