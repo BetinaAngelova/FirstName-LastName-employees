@@ -1,12 +1,12 @@
 import { useCallback, useState } from 'react';
 import { findLongestWorkingColleagues } from './utils/utils';
-import { formatDate } from './utils/date';
+import { formatDate, formatDays } from './utils/date';
 
 import './App.css';
 
 function App() {
 	const [data, setData] = useState([]);
-	const { firstColleagueId, secondColleagueId } = findLongestWorkingColleagues(data);
+	const { firstColleagueId, secondColleagueId, time } = findLongestWorkingColleagues(data);
 
 	const onChange = useCallback(event => {
 		const { files, value: filePath } = event.target;
@@ -50,8 +50,8 @@ function App() {
 							<div className="column">To Date</div>
 						</div>
 						<div className="content">
-							{data.map((employee, index) =>
-								<div key={index} className="row">
+							{data.map(employee =>
+								<div key={employee.employeeId} className="row">
 									<div className="column">{employee.employeeId}</div>
 									<div className="column">{employee.projectId}</div>
 									<div className="column">{formatDate(employee.fromDate)}</div>
@@ -60,8 +60,10 @@ function App() {
 							)}
 						</div>
 					</div>
-					{!firstColleagueId || !secondColleagueId ? null :
-						<div className="additional-info">The longest working together employees are {firstColleagueId} and {secondColleagueId}</div>
+					{firstColleagueId && secondColleagueId && time ?
+						<div className="additional-info">
+							The longest working together employees are <span>{firstColleagueId}</span> and <span>{secondColleagueId}</span> - <span>{formatDays(time)}</span> days
+						</div> : null
 					}
 				</div>
 			}

@@ -29,7 +29,7 @@
 }
 
 .app .table .content {
-  height: 80px;
+  height: 160px;
   background: #ccefff;
   overflow-y: auto;
 }
@@ -42,4 +42,8 @@
   font-size: 14px;
   font-weight: 600;
   padding-top: 20px;
+}
+
+.app .additional-info span {
+  color: #00a7e1;
 }

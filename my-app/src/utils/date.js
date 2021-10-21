@@ -5,3 +5,7 @@ export const formatDate = date => {
 
     return `${year}-${month}-${day}`;
 };
+
+export const formatDays = time => {
+    return Math.floor(time / 1000 / 60 / 60 / 24);
+};
