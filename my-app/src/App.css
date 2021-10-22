@@ -10,7 +10,7 @@
 
 .app .table .header {
   background: #e6faff;
-  border-bottom: 1px solid #000;
+  border-bottom: 1px solid #999999;
 }
 
 .app .table .header,
@@ -35,7 +35,7 @@
 }
 
 .app .table .content .row ~ .row {
-  border-top: 1px solid #000;
+  border-top: 1px solid #999999;
 }
 
 .app .additional-info {
