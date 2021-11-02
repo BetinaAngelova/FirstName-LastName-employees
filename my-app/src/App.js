@@ -1,74 +1,180 @@
-import { useCallback, useState } from 'react';
-import { findLongestWorkingColleagues } from './utils/utils';
-import { formatDate, formatDays } from './utils/date';
+import React, { useState } from 'react';
+import { max, min, differenceInDays } from 'date-fns';
+import FilePicker from './File/File';
+import Table from './Table/Table';
+import './index.css';
 
-import './App.css';
+const App = () => {
+  const [employees, setEmployees] = useState([]);
 
-function App() {
-	const [data, setData] = useState([]);
-	const { firstColleagueId, secondColleagueId, time } = findLongestWorkingColleagues(data);
+  const onGetFileContent = (content) => {
+    const employees = content
+      .split('\n')
+      .filter((line) => line.trim() !== '')
+      .map((line) => {
+        const [employeeId, projectId, dateFrom, dateTo] = line.split(',');
+        return {
+          employeeId: employeeId.trim(),
+          projectId: projectId.trim(),
+          dateFrom: new Date(dateFrom.trim()),
+          dateTo: dateTo.trim() === 'NULL' ? new Date() : new Date(dateTo.trim()),
+          isToday: dateTo.trim() === 'NULL'
+        }
+      });
 
-	const onChange = useCallback(event => {
-		const { files, value: filePath } = event.target;
+    const pairsOfEmployeesSortedInDescOrderByDaysWorkedTogether = employees
+      .reduce((accumulator, employee) => {
+        const { projectId, ...restEmployee } = employee;
+        const isProjectAdded = accumulator.some(({ projectId }) => projectId === employee.projectId);
 
-		if (!filePath.endsWith('.txt')) {
-			return;
-		}
+        return isProjectAdded
+          ? accumulator.map((project) => ({
+            ...project,
+            employees: project.projectId === employee.projectId
+              ? [...project.employees, restEmployee]
+              : project.employees
+          }))
+          : [...accumulator, {
+            projectId: employee.projectId,
+            employees: [restEmployee]
+          }];
+      }, [])
+      .map((project) => ({
+        ...project,
+        employees: project.employees
+          .map((employee) => {
+            const otherEmployees = project.employees.filter(({ employeeId }) => (
+              employeeId !== employee.employeeId
+            ));
 
-		const reader = new FileReader();
+            return {
+              employeeId: employee.employeeId,
+              daysWorked: otherEmployees
+                .map((otherEmployee) => {
+                  const start = max([
+                    employee.dateFrom,
+                    otherEmployee.dateFrom
+                  ]);
 
-		reader.onload = event => {
-			const { result } = event.target;
-			const formattedData = result
-				.split('\n')
-				.map(item => {
-					const [employeeId, projectId, fromDate, toDate] = item.trim().split(/,\s*/);
+                  const end = employee.isToday || otherEmployee.isToday
+                    ? new Date()
+                    : min([
+                      employee.dateTo,
+                      otherEmployee.dateTo
+                    ]);
 
-					return {
-						employeeId,
-						projectId,
-						fromDate: new Date(fromDate),
-						toDate: toDate === 'NULL' ? new Date() : new Date(toDate)
-					};
-				});
+                  return {
+                    employeeId: otherEmployee.employeeId,
+                    daysWorked: differenceInDays(end, start)
+                  };
+                })
+                .sort((a, b) => (
+                  b.daysWorked - a.daysWorked
+                ))
+                .filter((otherEmployee) => (
+                  otherEmployee.daysWorked >= 0
+                ))
+            }
+          })
+          .filter((employee) => (
+            employee.daysWorked.length > 0
+          ))
+      }))
+      .filter((project) => project.employees.length > 0)
+      .map((project) => ({
+        ...project,
+        employees: project.employees
+          .map((employee) => {
+            const [firstDaysWorked] = employee.daysWorked;
 
-			setData(formattedData);
-		}
-		reader.readAsText(files[0]);
-	}, []);
+            return {
+              employeeId: employee.employeeId,
+              otherEmployeeId: firstDaysWorked.employeeId,
+              daysWorked: firstDaysWorked.daysWorked
+            };
+          })
+          .reduce((accumulator, employee) => (
+            accumulator.some(({ employeeId, otherEmployeeId }) => (
+              (employeeId === employee.employeeId && otherEmployeeId === employee.otherEmployeeId)
+                || (otherEmployeeId === employee.employeeId && employeeId === employee.otherEmployeeId)
+            ))
+            ? accumulator
+            : [...accumulator, employee]
+          ), [])
+          .sort((a, b) => b.daysWorked - a.daysWorked)
+      }))
+      .reduce((accumulator, project) => (
+        [...accumulator, ...project.employees.map((employee) => ({
+          ...employee,
+          projectId: project.projectId
+        }))]
+      ), [])
+      .sort((a, b) => b.daysWorked - a.daysWorked);
 
-	return (
-		<div className="app">
-			<input type="file" onChange={onChange} />
-			{!data.length ? null :
-				<div className="body">
-					<div className="table">
-						<div className="header">
-							<div className="column">Employee ID</div>
-							<div className="column">Project ID</div>
-							<div className="column">From Date</div>
-							<div className="column">To Date</div>
-						</div>
-						<div className="content">
-							{data.map(employee =>
-								<div key={employee.employeeId} className="row">
-									<div className="column">{employee.employeeId}</div>
-									<div className="column">{employee.projectId}</div>
-									<div className="column">{formatDate(employee.fromDate)}</div>
-									<div className="column">{formatDate(employee.toDate)}</div>
-								</div>
-							)}
-						</div>
-					</div>
-					{firstColleagueId && secondColleagueId && time ?
-						<div className="additional-info">
-							The longest working together employees are <span>{firstColleagueId}</span> and <span>{secondColleagueId}</span> - <span>{formatDays(time)}</span> days
-						</div> : null
-					}
-				</div>
-			}
-		</div>
-	);
+    setEmployees(pairsOfEmployeesSortedInDescOrderByDaysWorkedTogether);
+
+    console.log('Results:');
+    console.log(pairsOfEmployeesSortedInDescOrderByDaysWorkedTogether);
+  };
+
+  const onDropFiles = ([file]) => {
+    const fileReader = new FileReader();
+
+    fileReader.onload = () => {
+      onGetFileContent(fileReader.result);
+    }
+
+    fileReader.readAsText(file);
+  };
+
+  return (
+    <div className="app">
+      <div className="app__content">
+        <div className="app__title">
+          <h2>Employees Task</h2>
+          <span>For Sirma Solutions</span>
+        </div>
+
+        <FilePicker
+          accept="text/plain"
+          onDrop={onDropFiles}
+        />
+
+        {employees.length > 0 && (
+          <div className="app__employees">
+            <Table
+              items={employees}
+              columns={[{
+                name: 'employeeId',
+                label: 'Employee ID #1',
+                render: ({ employeeId }) => (
+                  <span>{employeeId}</span>
+                )
+              }, {
+                name: 'otherEmployeeId',
+                label: 'Employee ID #2',
+                render: ({ otherEmployeeId }) => (
+                  <span>{otherEmployeeId}</span>
+                )
+              }, {
+                name: 'projectId',
+                label: 'Project ID',
+                render: ({ projectId }) => (
+                  <span>{projectId}</span>
+                )
+              }, {
+                name: 'daysWorked',
+                label: 'Days worked',
+                render: ({ daysWorked }) => (
+                  <span>{daysWorked}</span>
+                )
+              }]}
+            />
+          </div>
+        )}
+      </div>
+    </div>
+  );
 }
 
 export default App;

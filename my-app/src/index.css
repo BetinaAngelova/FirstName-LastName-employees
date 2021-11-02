@@ -5,9 +5,51 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-color: #efefef;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+.app {
+  max-width: 960px;
+  margin: 0 auto;
+  padding-left: 16px;
+  padding-right: 16px;
+}
+
+.app a {
+  color: #6666ff;
+  text-decoration: none;
+}
+
+.app a:hover {
+  text-decoration: underline;
+}
+
+.app__title {
+  margin-bottom: 32px;
+  text-align: center;
+}
+
+.app__title h2 {
+  margin: 0;
+  color: #000033;
+}
+
+.app__title span {
+ color: #555577;
+}
+
+.app__content {
+  padding-top: 32px;
+  min-height: calc(100vh - 84px);
+}
+
+.app__employees {
+  margin-top: 32px;
+}
+
+.app__footer {
+  padding-top: 16px;
+  padding-bottom: 16px;
+  font-size: 14px;
+  text-align: center;
 }
