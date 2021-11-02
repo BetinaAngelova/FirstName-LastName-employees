@@ -132,7 +132,6 @@ const App = () => {
       <div className="app__content">
         <div className="app__title">
           <h2>Employees Task</h2>
-          <span>For Sirma Solutions</span>
         </div>
 
         <FilePicker

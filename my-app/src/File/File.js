@@ -39,7 +39,7 @@ const FilePicker = (props) => {
             />
 
             <div className="file-picker__label">
-                <span>Drag and drop files here or Browse</span>
+                <span>Upload the file here</span>
             </div>
         </div>
     );

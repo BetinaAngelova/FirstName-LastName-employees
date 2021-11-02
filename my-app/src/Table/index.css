@@ -13,7 +13,7 @@
 }
   
 .table thead {
-    color: #6f7c80;
+    color: #004d26;
 }
   
 .table thead th {
@@ -35,8 +35,8 @@
 }
   
 .table tbody tr:hover {
-    color: #101111;
-    background-color: #e9e9fa;
+    color: #ffffff;
+    background-color:  #00994d;
 }
   
 .table__body {
