@@ -131,7 +131,7 @@ const App = () => {
     <div className="app">
       <div className="app__content">
         <div className="app__title">
-          <h2>Employees Task</h2>
+          <h2>Employees Table</h2>
         </div>
 
         <FilePicker
